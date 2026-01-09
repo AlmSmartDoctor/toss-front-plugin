@@ -25,12 +25,29 @@
   <body>
     <div id="app"></div>
     <script>
-
-      const onIdle = () => {
-        sdk.template.renderIdlePage();
-      };
-
-      onIdle();
+      sdk.template.renderIdlePage({
+        type: "twoButton",
+        title: {
+          text1: "여기서",
+          text2: "접수·수납",
+          text3: "해주세요",
+        },
+        description: {
+          text: "아래에서 원하는 메뉴를 선택해주세요",
+        },
+        primaryButton: {
+          text: "접수하기",
+          onClick: () => {
+            location.href = "visit.html?mode=checkin";
+          },
+        },
+        secondaryButton: {
+          text: "수납하기",
+          onClick: () => {
+            location.href = "visit.html?mode=checkout";
+          },
+        },
+      });
     </script>
   </body>
 </html>
