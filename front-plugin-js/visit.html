@@ -31,10 +31,25 @@
         location.href = "home.html";
       };
 
+      const isValidMode = (mode) => mode === "checkin" || mode === "checkout";
+
       const getMode = () => {
         const params = new URLSearchParams(location.search);
         const mode = params.get("mode");
-        return mode === "checkin" || mode === "checkout" ? mode : "checkout";
+        if (isValidMode(mode)) {
+          try {
+            sessionStorage.setItem("visitMode", mode);
+          } catch {}
+          return mode;
+        }
+
+        // Some environments may drop/override query params; fall back to a prior explicit choice.
+        try {
+          const stored = sessionStorage.getItem("visitMode");
+          if (isValidMode(stored)) return stored;
+        } catch {}
+
+        return "checkout";
       };
 
       const getStep = () => {

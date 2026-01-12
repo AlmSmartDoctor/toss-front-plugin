@@ -105,6 +105,9 @@
     };
 
     const goCheckoutBillSelect = () => {
+      try {
+        sessionStorage.setItem("visitMode", "checkout");
+      } catch {}
       location.href = "visit.html?mode=checkout&step=billSelect";
     };
 

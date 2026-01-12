@@ -26,7 +26,10 @@
     <div id="app"></div>
     <script>
       async function checkToken() {
-        const useTokenAuthorization = true;
+        // 기본값은 onboarding 없이 바로 홈으로 진입합니다.
+        // 토큰 기반 온보딩(데모)을 사용하려면 `index.html?auth=token` 으로 접속하세요.
+        const url = new URL(location.href);
+        const useTokenAuthorization = url.searchParams.get("auth") === "token";
 
         /**
          * 초기 설정 예시입니다.
@@ -39,7 +42,8 @@
           if (token != null) {
             location.href = "./home.html";
           } else {
-            location.href = "./onboarding.html";
+            // onboarding.html은 데모 용도이며 기본 플로우에서는 사용하지 않습니다.
+            location.href = "./home.html";
           }
         } else {
           location.href = "./home.html";
