@@ -1,500 +1,492 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link
-      rel="stylesheet"
-      href="https://static.toss.im/tds/43.9.4/css/tds.min.css"
-    />
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="https://static.toss.im/tps/main.css"
-    />
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="https://static.toss.im/tps/others.css"
-    />
-    <link rel="stylesheet" type="text/css" href="./global.css" />
-    <script src="https://cdn.tossplace.com/toss-front-sdk/v0/index.js"></script>
-    <script src="./sdk.js"></script>
-    <title>Order Example - Toss Front SDK</title>
-  </head>
-  <body>
-    <div id="app"></div>
-    <script>
-      const VISIT_CONTEXT_KEY = "visitContext";
 
-      const ORDER = {
-        items: [
-          {
-            // 피부과 시술 예시: 울쎄라 리프팅은 보통 샷 수에 따라 금액이 달라집니다.
-            // 현실적인 예시 범위: 약 2,000,000원 ~ 6,000,000원 (샷 수/부위/병원에 따라 상이)
-            label: "울쎄라 리프팅 (600샷)",
-            quantity: 1,
-            value: 4200000,
-            // imageUrl: "https://example.com/image.jpg", // Optional
-            options: [
-              {
-                type: "option",
-                label: "국소마취 크림",
-                value: 50000,
-              },
-              {
-                type: "option",
-                label: "재생관리 (진정관리)",
-                value: 150000,
-              },
-              {
-                type: "discount",
-                label: "프로모션 할인",
-                value: 200000,
-              },
-            ],
-          },
-          {
-            label: "진료 상담비",
-            quantity: 1,
-            value: 30000,
-          },
-        ],
-        // discounts는 최대 3개 까지 렌더됩니다.
-        discounts: [
-          {
-            label: "패키지 할인",
-            value: 100000,
-          },
-        ],
-        summary: {
-          // (4,200,000 + 50,000 + 150,000 - 200,000) + 30,000 = 4,230,000
-          // 추가 할인 100,000 적용 후 총 결제 금액 = 4,130,000
-          totalAmount: 4130000,
-          discountAmount: 300000,
-          earned: {
-            label: "메디케시 적립",
-            value: 413000,
-            suffix: "P",
-          },
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://static.toss.im/tds/43.9.4/css/tds.min.css" />
+  <link rel="stylesheet" type="text/css" href="https://static.toss.im/tps/main.css" />
+  <link rel="stylesheet" type="text/css" href="https://static.toss.im/tps/others.css" />
+  <link rel="stylesheet" type="text/css" href="./global.css" />
+  <script src="https://cdn.tossplace.com/toss-front-sdk/v0/index.js"></script>
+  <script src="./sdk.js"></script>
+  <title>Order Example - Toss Front SDK</title>
+</head>
+
+<body>
+  <div id="app"></div>
+  <script>
+    const VISIT_CONTEXT_KEY = "visitContext";
+
+    const ORDER = {
+      items: [
+        {
+          // 피부과 시술 예시: 울쎄라 리프팅은 보통 샷 수에 따라 금액이 달라집니다.
+          // 현실적인 예시 범위: 약 2,000,000원 ~ 6,000,000원 (샷 수/부위/병원에 따라 상이)
+          label: "울쎄라 리프팅 (600샷)",
+          quantity: 1,
+          value: 4200000,
+          // imageUrl: "https://example.com/image.jpg", // Optional
+          options: [
+            {
+              type: "option",
+              label: "국소마취 크림",
+              value: 50000,
+            },
+            {
+              type: "option",
+              label: "재생관리 (진정관리)",
+              value: 150000,
+            },
+            {
+              type: "discount",
+              label: "프로모션 할인",
+              value: 200000,
+            },
+          ],
         },
-      };
+        {
+          label: "진료 상담비",
+          quantity: 1,
+          value: 30000,
+        },
+      ],
+      // discounts는 최대 3개 까지 렌더됩니다.
+      discounts: [
+        {
+          label: "패키지 할인",
+          value: 100000,
+        },
+      ],
+      summary: {
+        // (4,200,000 + 50,000 + 150,000 - 200,000) + 30,000 = 4,230,000
+        // 추가 할인 100,000 적용 후 총 결제 금액 = 4,130,000
+        totalAmount: 4130000,
+        discountAmount: 300000,
+        earned: {
+          label: "메디케시 적립",
+          value: 413000,
+          suffix: "P",
+        },
+      },
+    };
 
-      const fetchPayment = async () => {
-        const { value: token } = await sdk.storage.get({ key: "token" });
+    const fetchPayment = async () => {
+      const { value: token } = await sdk.storage.get({ key: "token" });
 
-        const response = await fetch("https://example.com", {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        })
-          .then((response) => response.json())
-          .catch(() => ORDER);
+      const response = await fetch("https://example.com", {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      })
+        .then((response) => response.json())
+        .catch(() => ORDER);
 
-        return response;
-      };
+      return response;
+    };
 
-      const MEDICASH_POINT = {
-        name: "메디케시",
-        // TODO: Replace with real point balance from your backend if needed.
-        amount: 500000,
-      };
+    const MEDICASH_POINT = {
+      name: "메디케시",
+      // TODO: Replace with real point balance from your backend if needed.
+      amount: 500000,
+    };
 
-      const formatKRW = (amount) => {
-        try {
-          return new Intl.NumberFormat("ko-KR").format(amount);
-        } catch {
-          return String(amount);
-        }
-      };
+    const formatKRW = (amount) => {
+      try {
+        return new Intl.NumberFormat("ko-KR").format(amount);
+      } catch {
+        return String(amount);
+      }
+    };
 
-      const goHome = () => {
-        location.href = "home.html";
-      };
+    const goHome = () => {
+      location.href = "home.html";
+    };
 
-      const goCheckoutBillSelect = () => {
-        location.href = "visit.html?mode=checkout&step=billSelect";
-      };
+    const goCheckoutBillSelect = () => {
+      location.href = "visit.html?mode=checkout&step=billSelect";
+    };
 
-      // Guard for auto-home timer behavior so back navigation doesn't unexpectedly jump home.
-      let shouldAutoGoHome = false;
+    // Guard for auto-home timer behavior so back navigation doesn't unexpectedly jump home.
+    let shouldAutoGoHome = false;
 
-      const startAutoGoHomeTimer = () => {
-        shouldAutoGoHome = true;
-        // Give the user a moment to read the result before returning home.
-        // `warnAt` triggers a warning modal near the end of the timer.
-        sdk.template.startTimer({
-          title: "곧 홈으로 이동할게요",
-          duration: 20,
-          warnAt: 3,
-          onTimeout: () => {
-            if (shouldAutoGoHome) {
-              goHome();
-            }
-          },
-        });
-      };
+    const startAutoGoHomeTimer = () => {
+      shouldAutoGoHome = true;
+      // Give the user a moment to read the result before returning home.
+      // `warnAt` triggers a warning modal near the end of the timer.
+      sdk.template.startTimer({
+        title: "곧 홈으로 이동할게요",
+        duration: 20,
+        warnAt: 3,
+        onTimeout: () => {
+          if (shouldAutoGoHome) {
+            goHome();
+          }
+        },
+      });
+    };
 
-      const renderPaymentSuccessAndGoHome = (context) => {
-        const {
-          order,
-          pointUsedAmount,
-          paymentAmount,
-          installmentMonths,
-          selectedPaymentMethod,
-          selectedPaymentMethodLabel,
-        } = context;
-        const totalPaidAmount =
-          typeof paymentAmount === "number"
-            ? paymentAmount
-            : order?.summary?.totalAmount ?? 0;
-        const visit = context?.visitContext;
+    const renderPaymentSuccessAndGoHome = (context) => {
+      const {
+        order,
+        pointUsedAmount,
+        paymentAmount,
+        installmentMonths,
+        selectedPaymentMethod,
+        selectedPaymentMethodLabel,
+      } = context;
+      const totalPaidAmount =
+        typeof paymentAmount === "number"
+          ? paymentAmount
+          : order?.summary?.totalAmount ?? 0;
+      const visit = context?.visitContext;
 
-        const installmentSuffix =
-          selectedPaymentMethod === "CARD" &&
+      const installmentSuffix =
+        selectedPaymentMethod === "CARD" &&
           typeof installmentMonths === "number" &&
           installmentMonths > 0
-            ? ` (할부 ${installmentMonths}개월)`
-            : "";
+          ? ` (할부 ${installmentMonths}개월)`
+          : "";
 
-        sdk.template.openToast({
-          message: `결제가 완료됐어요${installmentSuffix}`,
-          icon: "success",
-        });
+      sdk.template.openToast({
+        message: `결제가 완료됐어요${installmentSuffix}`,
+        icon: "success",
+      });
 
-        // Prefer an explicit result screen after payment success.
-        // NOTE: `renderOrderResultPage` can fail silently if params don't match its schema,
-        // so we keep the payload minimal and type-safe (numbers for amounts).
-        try {
-          sdk.template.renderOrderResultPage({
-            order: {
-              items: (order?.items ?? []).map((item) => ({
-                label: item.label,
-                quantity: item.quantity ?? 1,
-                // NOTE: Template expects numeric value. Passing a string can break rendering.
-                value: item.value,
-              })),
-              summary: {
-                totalAmount: totalPaidAmount,
-              },
-            },
-            cta: {
-              text: "홈으로",
-              onClick: () => {
-                shouldAutoGoHome = false;
-                goHome();
-              },
-            },
-            onBack: () => {
-              shouldAutoGoHome = false;
-              if (visit?.mode === "checkout") {
-                goCheckoutBillSelect();
-                return;
-              }
-              renderOrderPage(order);
-            },
-          });
-        } catch (e) {
-          sdk.template.renderIdlePage({
-            type: "oneButton",
-            description: {
-              text: "잠시 후 홈으로 이동할게요",
-            },
-            button: {
-              text: "홈으로",
-              onClick: () => {
-                shouldAutoGoHome = false;
-                goHome();
-              },
-            },
-          });
-        }
-
-        startAutoGoHomeTimer();
-        // Clear visit context after finishing the flow (best-effort).
-        sdk.storage.remove({ key: VISIT_CONTEXT_KEY }).catch(() => {});
-      };
-
-      const requestPaymentWithAmount = async (amount, context) => {
-        if (context?.selectedPaymentMethod) {
-          renderPaymentSuccessAndGoHome({
-            ...context,
-            paymentAmount:
-              typeof context?.paymentAmount === "number" ? context.paymentAmount : amount,
-          });
-          return;
-        }
-
-        const tax = Math.floor(amount / 11);
-        const supplyValue = amount - tax;
-
-        const result = await sdk.payment.requestPayment({
-          paymentKey: "paymentKey",
-          tax,
-          supplyValue,
-          tip: 0,
-        });
-
-        if (result.type === "CANCELED" || result.type === "TIMEOUT") {
-          return;
-        }
-
-        renderPaymentSuccessAndGoHome(context);
-
-        switch (result.response.paymentMethod) {
-          case "CARD":
-            console.log(result.response.card);
-            break;
-          case "BARCODE":
-            console.log(result.response.barcode);
-            break;
-          case "CASH":
-            console.log(result.response.cash);
-            break;
-        }
-      };
-
-      const getInstallmentOptions = (amount) => {
-        // Under 50,000원: only "일시불"
-        if (amount < 50000) {
-          return [{ id: "0", title: "일시불" }];
-        }
-
-        // Common card installment options (can be tuned per partner/PG policy)
-        const months = [0, 2, 3, 4, 5, 6, 9, 12];
-        return months.map((m) => ({
-          id: String(m),
-          title: m === 0 ? "일시불" : `${m}개월`,
-        }));
-      };
-
-      const renderInstallmentSelectPage = ({ amount, context, onBack }) => {
-        const options = getInstallmentOptions(amount);
-
-        // Prefer the dedicated select template. Fall back to a search page if unavailable.
-        try {
-          sdk.template.renderSelectPage({
-            title: "할부 개월 선택",
-            subtitle: `결제할 금액 ${formatKRW(amount)}원`,
-            options: options.map((o) => ({
-              title: o.title,
-              onClick: async () => {
-                const months = Number(o.id);
-                await requestPaymentWithAmount(amount, {
-                  ...context,
-                  installmentMonths: Number.isFinite(months) ? months : 0,
-                });
-              },
+      // Prefer an explicit result screen after payment success.
+      // NOTE: `renderOrderResultPage` can fail silently if params don't match its schema,
+      // so we keep the payload minimal and type-safe (numbers for amounts).
+      try {
+        sdk.template.renderOrderResultPage({
+          order: {
+            items: (order?.items ?? []).map((item) => ({
+              label: item.label,
+              quantity: item.quantity ?? 1,
+              // NOTE: Template expects numeric value. Passing a string can break rendering.
+              value: item.value,
             })),
-            onBack,
-          });
-          return;
-        } catch (e) {
-          // no-op: fallback below
-        }
-
-        sdk.template.renderSearchPage({
-          top: {
-            title: "할부 개월을 선택해주세요",
-            subtitle: `결제할 금액 ${formatKRW(amount)}원`,
-          },
-          input: { placeholder: "할부 개월 검색" },
-          getOptions: async ({ keyword }) => {
-            const k = (keyword ?? "").trim();
-            if (k.length === 0) return options;
-            return options.filter((o) => (o.title ?? "").includes(k));
-          },
-          onSubmit: async (selected) => {
-            const months = Number(selected?.id);
-            await requestPaymentWithAmount(amount, {
-              ...context,
-              installmentMonths: Number.isFinite(months) ? months : 0,
-            });
-          },
-          onBack,
-        });
-      };
-
-      const renderPaymentMethodSelectPage = ({ amount, context, onBack }) => {
-        const options = [
-          { id: "CARD", title: "카드" },
-          { id: "WALLET", title: "삼성·애플페이" },
-          { id: "CASH", title: "현금" },
-          { id: "QR", title: "QR 간편결제" },
-        ];
-
-        // Prefer select template, fallback to search template
-        try {
-          sdk.template.renderSelectPage({
-            title: "결제 방법을 선택해주세요",
-            subtitle: `결제할 금액 ${formatKRW(amount)}원`,
-            options: options.map((o) => ({
-              title: o.title,
-              onClick: async () => {
-                const nextContext = {
-                  ...context,
-                  selectedPaymentMethod: o.id,
-                  selectedPaymentMethodLabel: o.title,
-                };
-
-                // Only 카드 shows installment selection
-                if (o.id === "CARD") {
-                  renderInstallmentSelectPage({
-                    amount,
-                    context: nextContext,
-                    onBack: () => {
-                      renderPaymentMethodSelectPage({ amount, context, onBack });
-                    },
-                  });
-                  return;
-                }
-
-                await requestPaymentWithAmount(amount, nextContext);
-              },
-            })),
-            onBack,
-          });
-          return;
-        } catch (e) {
-          // no-op: fallback below
-        }
-
-        sdk.template.renderSearchPage({
-          top: {
-            title: "결제 방법을 선택해주세요",
-            subtitle: `결제할 금액 ${formatKRW(amount)}원`,
-          },
-          input: { placeholder: "결제 방법 검색" },
-          getOptions: async ({ keyword }) => {
-            const k = (keyword ?? "").trim();
-            if (k.length === 0) return options;
-            return options.filter((o) => (o.title ?? "").includes(k));
-          },
-          onSubmit: async (selected) => {
-            const o = options.find((x) => x.id === selected?.id) ?? selected;
-            const methodId = o?.id ?? "CARD";
-            const nextContext = {
-              ...context,
-              selectedPaymentMethod: methodId,
-              selectedPaymentMethodLabel: o?.title,
-            };
-            if (methodId === "CARD") {
-              renderInstallmentSelectPage({
-                amount,
-                context: nextContext,
-                onBack: () => {
-                  renderPaymentMethodSelectPage({ amount, context, onBack });
-                },
-              });
-              return;
-            }
-            await requestPaymentWithAmount(amount, nextContext);
-          },
-          onBack,
-        });
-      };
-
-      const renderUsePointPage = (order) => {
-        const originalAmount = order.summary.totalAmount;
-        const usablePointAmount = Math.min(MEDICASH_POINT.amount, originalAmount);
-
-        sdk.template.renderUsePointPage({
-          points: [MEDICASH_POINT],
-          summary: {
-            pointUsedAmount: 0,
-            paymentAmount: originalAmount,
+            summary: {
+              totalAmount: totalPaidAmount,
+            },
           },
           cta: {
-            cancel: {
-              onClick: async () => {
-                renderPaymentMethodSelectPage({
-                  amount: originalAmount,
-                  context: {
-                    order,
-                    pointUsedAmount: 0,
-                    paymentAmount: originalAmount,
-                    visitContext,
-                  },
-                  onBack: () => {
-                    renderUsePointPage(order);
-                  },
-                });
-              },
-            },
-            submit: {
-              onClick: async () => {
-                const paymentAmount = Math.max(0, originalAmount - usablePointAmount);
-
-                if (paymentAmount === 0) {
-                  renderPaymentSuccessAndGoHome({
-                    order,
-                    pointUsedAmount: usablePointAmount,
-                    paymentAmount: 0,
-                    installmentMonths: 0,
-                    visitContext,
-                  });
-                  return;
-                }
-
-                renderPaymentMethodSelectPage({
-                  amount: paymentAmount,
-                  context: {
-                    order,
-                    pointUsedAmount: usablePointAmount,
-                    paymentAmount,
-                    visitContext,
-                  },
-                  onBack: () => {
-                    renderUsePointPage(order);
-                  },
-                });
-              },
+            text: "홈으로",
+            onClick: () => {
+              shouldAutoGoHome = false;
+              goHome();
             },
           },
           onBack: () => {
-            renderOrderPage(order);
-          },
-        });
-      };
-
-      const onHandlePayment = async () => {
-        const { value: visitContextRaw } = await sdk.storage.get({ key: VISIT_CONTEXT_KEY });
-        try {
-          visitContext = visitContextRaw ? JSON.parse(visitContextRaw) : null;
-        } catch {
-          visitContext = null;
-        }
-
-        const order = await fetchPayment();
-
-        if (order == null) {
-          return null;
-        }
-
-        renderOrderPage(order);
-      };
-
-      // visit context (patient/room/doctor) passed from `visit.html`
-      let visitContext = null;
-
-      const renderOrderPage = async (order) => {
-        sdk.template.renderOrderPage({
-          order,
-          onClick: async () => {
-            renderUsePointPage(order);
-          },
-          onBack: () => {
-            if (visitContext?.mode === "checkout") {
+            shouldAutoGoHome = false;
+            if (visit?.mode === "checkout") {
               goCheckoutBillSelect();
               return;
             }
-            location.href = "home.html"
+            renderOrderPage(order);
           },
         });
-      };
+      } catch (e) {
+        sdk.template.renderIdlePage({
+          type: "oneButton",
+          description: {
+            text: "잠시 후 홈으로 이동할게요",
+          },
+          button: {
+            text: "홈으로",
+            onClick: () => {
+              shouldAutoGoHome = false;
+              goHome();
+            },
+          },
+        });
+      }
 
-      onHandlePayment();
-    </script>
-  </body>
+      startAutoGoHomeTimer();
+      // Clear visit context after finishing the flow (best-effort).
+      sdk.storage.remove({ key: VISIT_CONTEXT_KEY }).catch(() => { });
+    };
+
+    const requestPaymentWithAmount = async (amount, context) => {
+      if (context?.selectedPaymentMethod) {
+        renderPaymentSuccessAndGoHome({
+          ...context,
+          paymentAmount:
+            typeof context?.paymentAmount === "number" ? context.paymentAmount : amount,
+        });
+        return;
+      }
+
+      const tax = Math.floor(amount / 11);
+      const supplyValue = amount - tax;
+
+      const result = await sdk.payment.requestPayment({
+        paymentKey: "paymentKey",
+        tax,
+        supplyValue,
+        tip: 0,
+      });
+
+      if (result.type === "CANCELED" || result.type === "TIMEOUT") {
+        return;
+      }
+
+      renderPaymentSuccessAndGoHome(context);
+
+      switch (result.response.paymentMethod) {
+        case "CARD":
+          console.log(result.response.card);
+          break;
+        case "BARCODE":
+          console.log(result.response.barcode);
+          break;
+        case "CASH":
+          console.log(result.response.cash);
+          break;
+      }
+    };
+
+    const getInstallmentOptions = (amount) => {
+      // Under 50,000원: only "일시불"
+      if (amount < 50000) {
+        return [{ id: "0", title: "일시불" }];
+      }
+
+      // Common card installment options (can be tuned per partner/PG policy)
+      const months = [0, 2, 3, 4, 5, 6, 9, 12];
+      return months.map((m) => ({
+        id: String(m),
+        title: m === 0 ? "일시불" : `${m}개월`,
+      }));
+    };
+
+    const renderInstallmentSelectPage = ({ amount, context, onBack }) => {
+      const options = getInstallmentOptions(amount);
+
+      // Prefer the dedicated select template. Fall back to a search page if unavailable.
+      try {
+        sdk.template.renderSelectPage({
+          title: "할부 개월 선택",
+          subtitle: `결제할 금액 ${formatKRW(amount)}원`,
+          options: options.map((o) => ({
+            title: o.title,
+            onClick: async () => {
+              const months = Number(o.id);
+              await requestPaymentWithAmount(amount, {
+                ...context,
+                installmentMonths: Number.isFinite(months) ? months : 0,
+              });
+            },
+          })),
+          onBack,
+        });
+        return;
+      } catch (e) {
+        // no-op: fallback below
+      }
+
+      sdk.template.renderSearchPage({
+        top: {
+          title: "할부 개월을 선택해주세요",
+          subtitle: `결제할 금액 ${formatKRW(amount)}원`,
+        },
+        input: { placeholder: "할부 개월 검색" },
+        getOptions: async ({ keyword }) => {
+          const k = (keyword ?? "").trim();
+          if (k.length === 0) return options;
+          return options.filter((o) => (o.title ?? "").includes(k));
+        },
+        onSubmit: async (selected) => {
+          const months = Number(selected?.id);
+          await requestPaymentWithAmount(amount, {
+            ...context,
+            installmentMonths: Number.isFinite(months) ? months : 0,
+          });
+        },
+        onBack,
+      });
+    };
+
+    const renderPaymentMethodSelectPage = ({ amount, context, onBack }) => {
+      const options = [
+        { id: "CARD", title: "카드" },
+        { id: "WALLET", title: "삼성·애플페이" },
+        { id: "CASH", title: "현금" },
+        { id: "QR", title: "QR 간편결제" },
+      ];
+
+      // Prefer select template, fallback to search template
+      try {
+        sdk.template.renderSelectPage({
+          title: "결제 방법을 선택해주세요",
+          subtitle: `결제할 금액 ${formatKRW(amount)}원`,
+          options: options.map((o) => ({
+            title: o.title,
+            onClick: async () => {
+              const nextContext = {
+                ...context,
+                selectedPaymentMethod: o.id,
+                selectedPaymentMethodLabel: o.title,
+              };
+
+              // Only 카드 shows installment selection
+              if (o.id === "CARD") {
+                renderInstallmentSelectPage({
+                  amount,
+                  context: nextContext,
+                  onBack: () => {
+                    renderPaymentMethodSelectPage({ amount, context, onBack });
+                  },
+                });
+                return;
+              }
+
+              await requestPaymentWithAmount(amount, nextContext);
+            },
+          })),
+          onBack,
+        });
+        return;
+      } catch (e) {
+        // no-op: fallback below
+      }
+
+      sdk.template.renderSearchPage({
+        top: {
+          title: "결제 방법을 선택해주세요",
+          subtitle: `결제할 금액 ${formatKRW(amount)}원`,
+        },
+        input: { placeholder: "결제 방법 검색" },
+        getOptions: async ({ keyword }) => {
+          const k = (keyword ?? "").trim();
+          if (k.length === 0) return options;
+          return options.filter((o) => (o.title ?? "").includes(k));
+        },
+        onSubmit: async (selected) => {
+          const o = options.find((x) => x.id === selected?.id) ?? selected;
+          const methodId = o?.id ?? "CARD";
+          const nextContext = {
+            ...context,
+            selectedPaymentMethod: methodId,
+            selectedPaymentMethodLabel: o?.title,
+          };
+          if (methodId === "CARD") {
+            renderInstallmentSelectPage({
+              amount,
+              context: nextContext,
+              onBack: () => {
+                renderPaymentMethodSelectPage({ amount, context, onBack });
+              },
+            });
+            return;
+          }
+          await requestPaymentWithAmount(amount, nextContext);
+        },
+        onBack,
+      });
+    };
+
+    const renderUsePointPage = (order) => {
+      const originalAmount = order.summary.totalAmount;
+      const usablePointAmount = Math.min(MEDICASH_POINT.amount, originalAmount);
+
+      sdk.template.renderUsePointPage({
+        points: [MEDICASH_POINT],
+        summary: {
+          pointUsedAmount: 0,
+          paymentAmount: originalAmount,
+        },
+        cta: {
+          cancel: {
+            onClick: async () => {
+              renderPaymentMethodSelectPage({
+                amount: originalAmount,
+                context: {
+                  order,
+                  pointUsedAmount: 0,
+                  paymentAmount: originalAmount,
+                  visitContext,
+                },
+                onBack: () => {
+                  renderUsePointPage(order);
+                },
+              });
+            },
+          },
+          submit: {
+            onClick: async () => {
+              const paymentAmount = Math.max(0, originalAmount - usablePointAmount);
+
+              if (paymentAmount === 0) {
+                renderPaymentSuccessAndGoHome({
+                  order,
+                  pointUsedAmount: usablePointAmount,
+                  paymentAmount: 0,
+                  installmentMonths: 0,
+                  visitContext,
+                });
+                return;
+              }
+
+              renderPaymentMethodSelectPage({
+                amount: paymentAmount,
+                context: {
+                  order,
+                  pointUsedAmount: usablePointAmount,
+                  paymentAmount,
+                  visitContext,
+                },
+                onBack: () => {
+                  renderUsePointPage(order);
+                },
+              });
+            },
+          },
+        },
+        onBack: () => {
+          renderOrderPage(order);
+        },
+      });
+    };
+
+    const onHandlePayment = async () => {
+      const { value: visitContextRaw } = await sdk.storage.get({ key: VISIT_CONTEXT_KEY });
+      try {
+        visitContext = visitContextRaw ? JSON.parse(visitContextRaw) : null;
+      } catch {
+        visitContext = null;
+      }
+
+      const order = await fetchPayment();
+
+      if (order == null) {
+        return null;
+      }
+
+      renderOrderPage(order);
+    };
+
+    // visit context (patient/room/doctor) passed from `visit.html`
+    let visitContext = null;
+
+    const renderOrderPage = async (order) => {
+      sdk.template.renderOrderPage({
+        order,
+        onClick: async () => {
+          renderUsePointPage(order);
+        },
+        onBack: () => {
+          if (visitContext?.mode === "checkout") {
+            goCheckoutBillSelect();
+            return;
+          }
+          location.href = "home.html"
+        },
+      });
+    };
+
+    onHandlePayment();
+  </script>
+</body>
+
 </html>
