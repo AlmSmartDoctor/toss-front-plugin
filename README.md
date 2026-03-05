@@ -22,10 +22,9 @@
 ```
 .
 ├─ global.css    # 전역 스타일
-├─ index.html    # 진입점
-├─ home.html     # 대기 화면
-├─ onboarding.html # 온보딩 화면
-├─ order.html    # 주문 내역 화면
+├─ index.html    # 진입점 (home으로 이동)
+├─ home.html     # 기본 대기 화면(renderIdlePage)
+├─ order.html    # 메디케시 사용 + 결제 플로우
 └─ sdk.js        # SDK 유틸리티
 ```
 
@@ -33,4 +32,28 @@
 ## 3. 시작하기
 
 문서를 참고해주세요 ([🔗 Toss FRONT 플러그인 개발 가이드](https://docs.tossplace.com/guide/front-integration/getting-started.html)).
+
+## 4. 현재 구현 플로우 (TO-BE 기준)
+
+- 기본 화면: `renderIdlePage`에서 `메디케시 사용` 버튼 제공
+- 메디케시 사용 화면: `renderUsePointPage`
+- 결제 금액 확인 화면: `renderOrderPage`
+- 결제 성공 화면: `renderResultPage`
+- 결제 실패 화면: `renderOrderResultPage`
+
+## 5. 임시 Mock 시나리오
+
+웹소켓/백엔드 연동 전까지 `order.html?scenario=...` 로 QA 가능합니다.
+
+- `eligible`: 메디케시 사용 가능 후 결제
+- `insufficient`: 최소 사용 금액 미달(메디케시 화면 스킵)
+- `paymentFailure`: 결제 실패 화면 확인
+- `paymentSuccessMock`: 결제 성공 화면 확인(결제 API 호출 없이)
+
+## 6. TODO
+
+- 백엔드 웹소켓 이벤트로 기본 화면에서 자동 진입
+- 백엔드 계약 데이터(진료금액/보유캐시/최소사용금액/적립금) 연결
+- 메디케시 사용 확정 API 연동
+- 결제 승인 정보 저장 및 정산/취소 연동
 

@@ -25,35 +25,41 @@
   <body>
     <div id="app"></div>
     <script>
-      sdk.template.renderIdlePage({
-        type: "twoButton",
-        title: {
-          text1: "여기서",
-          text2: "접수·수납",
-          text3: "해주세요",
-        },
-        description: {
-          text: "아래에서 원하는 메뉴를 선택해주세요",
-        },
-        primaryButton: {
-          text: "접수하기",
-          onClick: () => {
-            try {
-              sessionStorage.setItem("visitMode", "checkin");
-            } catch {}
-            location.href = "visit.html?mode=checkin";
+      const DEFAULT_HOSPITAL_NAME = "메이퓨어 강남점";
+
+      const getScenario = () => {
+        const params = new URLSearchParams(location.search);
+        return params.get("scenario") ?? "eligible";
+      };
+
+      const loadHospitalName = async () => {
+        try {
+          const merchant = await sdk.app.getMerchant();
+          if (merchant?.name) return merchant.name;
+        } catch {}
+        return DEFAULT_HOSPITAL_NAME;
+      };
+
+      const renderIdle = async () => {
+        const hospitalName = await loadHospitalName();
+
+        sdk.template.renderIdlePage({
+          type: "oneButton",
+          description: {
+            text: hospitalName,
           },
-        },
-        secondaryButton: {
-          text: "수납하기",
-          onClick: () => {
-            try {
-              sessionStorage.setItem("visitMode", "checkout");
-            } catch {}
-            location.href = "visit.html?mode=checkout";
+          button: {
+            text: "메디케시 사용",
+            onClick: () => {
+              // TODO: replace button click with websocket-triggered auto navigation.
+              const scenario = getScenario();
+              location.href = `order.html?scenario=${encodeURIComponent(scenario)}`;
+            },
           },
-        },
-      });
+        });
+      };
+
+      renderIdle();
     </script>
   </body>
 </html>

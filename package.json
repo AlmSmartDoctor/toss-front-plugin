@@ -4,6 +4,7 @@
   "description": "토스플레이스 프론트엔드 플러그인 템플릿입니다.",
   "main": "index.js",
   "scripts": {
+    "dev": "npx serve front-plugin-js -l 3000",
     "zip": "zip -r front-plugin-js.zip front-plugin-js",
     "deploy": "pnpm exec ts-node deploy/index.ts"
   },
